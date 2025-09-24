@@ -32,7 +32,11 @@ public class InfoIconManager : MonoBehaviour
     {
         OnPopupInteractiveChanged += InfoInteractiveChange;
         // popupInteractables = FindObjectsOfType<PopupInteractable>(true);
-             
+        foreach (var item in popupInteractables)
+        {
+            item.detailsUI.GetComponent<InfoPanelContent>().AssetText(item.info_Content);
+        }
+
     }
 
 
@@ -75,21 +79,11 @@ public class InfoIconManager : MonoBehaviour
     [Obsolete]
     void AssignData()
     {
-        Debug.Log("Perform operation");
+        Debug.Log("Info Icon Manager Perform operation");
         popupInteractables = FindObjectsOfType<InfoiconInteractable>(true);
         foreach (var item in popupInteractables)
         {
             item.AssignRefs();
         }
     }
-
-   
-
-
-    
-
-    
-
-
-
 }

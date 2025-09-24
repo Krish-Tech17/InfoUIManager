@@ -127,6 +127,13 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2951934750220613718, guid: ee1e315920ed9dc408d9498d5dc79345, type: 3}
+      propertyPath: info_Content
+      value: '<size=44><b>MCd  1 </size></b><br>Lorem Ipsum is simply dummy text
+        of the printing and typesetting industry. Lorem Ipsum has been the industry''s
+        standard dummy text ever since the 1500s, when an unknown printer took a
+        galley of type and scrambled it to make a type specimen book. '
+      objectReference: {fileID: 0}
     - target: {fileID: 4602532365982373966, guid: ee1e315920ed9dc408d9498d5dc79345, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0

@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 public class InfoiconInteractable : UnityEngine.XR.Interaction.Toolkit.Interactables.XRBaseInteractable
 {
-    [SerializeField] string info_Content;
+    public string info_Content;
     public Outline outline;
     public Outline[] outlineObjs;
     public GameObject detailsUI;
