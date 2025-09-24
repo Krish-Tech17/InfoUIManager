@@ -611,8 +611,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7334962814999514883}
-  - component: {fileID: 8607727839024050519}
-  - component: {fileID: 1521262310965419892}
   - component: {fileID: 6249764154810958507}
   - component: {fileID: 2951934750220613718}
   - component: {fileID: 7011307318867067651}
@@ -640,59 +638,6 @@ Transform:
   - {fileID: 6813123085025270282}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: -90, z: 180}
---- !u!33 &8607727839024050519
-MeshFilter:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8871273889255041598}
-  m_Mesh: {fileID: -3020205018019503100, guid: 1eee74d9adcc3f14eb750261908c9494, type: 3}
---- !u!23 &1521262310965419892
-MeshRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8871273889255041598}
-  m_Enabled: 1
-  m_CastShadows: 1
-  m_ReceiveShadows: 1
-  m_DynamicOccludee: 1
-  m_StaticShadowCaster: 0
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 2
-  m_RayTraceProcedural: 0
-  m_RayTracingAccelStructBuildFlagsOverride: 0
-  m_RayTracingAccelStructBuildFlags: 1
-  m_SmallMeshCulling: 1
-  m_RenderingLayerMask: 1
-  m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 2100000, guid: 6fb6935f1f105b74b96e90f0ccb151ac, type: 2}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 3
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
-  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!65 &6249764154810958507
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -786,6 +731,10 @@ MonoBehaviour:
   m_StartingHoverFilters: []
   m_StartingSelectFilters: []
   m_StartingInteractionStrengthFilters: []
+  info_Content: '<size=44><b>MCd Ipsum 1 </size></b><br>Lorem Ipsum is simply dummy
+    text of the printing and typesetting industry. Lorem Ipsum has been the industry''s
+    standard dummy text ever since the 1500s, when an unknown printer took a galley
+    of type and scrambled it to make a type specimen book. '
   outline: {fileID: 0}
   outlineObjs: []
   detailsUI: {fileID: 8437400927378419901}

@@ -265,10 +265,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   popupInteractables:
-  - {fileID: 1710275329}
-  - {fileID: 2041849260}
   - {fileID: 502140993}
   - {fileID: 1449997837}
+  - {fileID: 1710275329}
+  - {fileID: 2041849260}
 --- !u!4 &1321322274
 Transform:
   m_ObjectHideFlags: 0
@@ -514,13 +514,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 2951934750220613718, guid: ee1e315920ed9dc408d9498d5dc79345, type: 3}
-      propertyPath: info_Content
-      value: '<size=44><b>Lorem Ipsum 1 </size></b><br>Lorem Ipsum is simply dummy
-        text of the printing and typesetting industry. Lorem Ipsum has been the industry''s
-        standard dummy text ever since the 1500s, when an unknown printer took a
-        galley of type and scrambled it to make a type specimen book. '
-      objectReference: {fileID: 0}
     - target: {fileID: 4602532365982373966, guid: ee1e315920ed9dc408d9498d5dc79345, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -952,7 +945,7 @@ PrefabInstance:
     - target: {fileID: 8429981633443581383, guid: 6c8af5c8012f01440af6cb2bc3eb987c, type: 3}
       propertyPath: m_LocomotionVignetteProviders.Array.data[2].m_LocomotionProvider
       value: 
-      objectReference: {fileID: 9014170783777442268}
+      objectReference: {fileID: 0}
     - target: {fileID: 8429981633443581383, guid: 6c8af5c8012f01440af6cb2bc3eb987c, type: 3}
       propertyPath: m_LocomotionVignetteProviders.Array.data[3].m_LocomotionProvider
       value: 
@@ -1589,17 +1582,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8b94c4c83dec6a94fbaebf543478259e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &9014170783777442268 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 153982007679157697, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}
-  m_PrefabInstance: {fileID: 9014170783777442263}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b1e8c997df241c1a67045eeac79b41b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1660057539 &9223372036854775807
