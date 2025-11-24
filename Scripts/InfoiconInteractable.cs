@@ -27,7 +27,7 @@ public class InfoiconInteractable : UnityEngine.XR.Interaction.Toolkit.Interacta
         }
         hoverEntered.AddListener(HoverEntered);
         hoverExited.AddListener(HoverExited);
-        selectEntered.AddListener(SelectEntered);
+        activated.AddListener(Activate);
         /*if (outline!=null)
         {
             outline.enabled = false;
@@ -66,7 +66,13 @@ public class InfoiconInteractable : UnityEngine.XR.Interaction.Toolkit.Interacta
 
     public bool isCurrentObj;
 
-    private void SelectEntered(SelectEnterEventArgs selectEnterEvent)
+    private void Activate(ActivateEventArgs selectEnterEvent)
+    {
+        OnEnableUI();
+        InfoIconManager.OnPopupInteractiveChanged(this, clicked);
+    }
+
+    public void EnableDisable()
     {
         OnEnableUI();
         InfoIconManager.OnPopupInteractiveChanged(this, clicked);
