@@ -69,9 +69,20 @@ public class PlacePrefabOnTopCenter : EditorWindow
             if (hasChildRenderer) continue;
 
             Renderer[] meshRenderers = meshObj.GetComponentsInChildren<Renderer>();
+
+
+            if (meshRenderers == null || meshRenderers.Length == 0)
+            {
+                Debug.LogWarning("No Renderer found in " + meshObj.name);
+                return; // skip this object
+            }
+
             Bounds bounds = meshRenderers[0].bounds;
             foreach (Renderer mr in meshRenderers)
-                bounds.Encapsulate(mr.bounds);
+            {
+                if (mr != null)
+                    bounds.Encapsulate(mr.bounds);
+            }
 
             Vector3 topCenter = new Vector3(
                 bounds.center.x + xOffset,
