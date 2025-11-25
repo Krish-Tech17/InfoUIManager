@@ -3,11 +3,11 @@ using UnityEditor;
 
 public class PlacePrefabOnTopCenter : EditorWindow
 {
-    private GameObject prefab;
+    private InfoiconInteractable InfoIconPrefab;
     private float xOffset = 0f;
     private float yOffset = 0.1f;
     private float zOffset = 0f;
-    private GameObject parentRoot;
+    private GameObject placeInfoTagInsideThisParent;
 
     [MenuItem("Tools/Place Prefab on Top Center")]
     public static void ShowWindow()
@@ -17,10 +17,10 @@ public class PlacePrefabOnTopCenter : EditorWindow
 
     private void OnGUI()
     {
-        GUILayout.Label("Prefab Placement Tool", EditorStyles.boldLabel);
+        GUILayout.Label("Info Icon Placement Tool", EditorStyles.boldLabel);
 
-        prefab = (GameObject)EditorGUILayout.ObjectField("Prefab", prefab, typeof(GameObject), false);
-        parentRoot = (GameObject)EditorGUILayout.ObjectField("Parent Root", parentRoot, typeof(GameObject), true);
+        InfoIconPrefab = (InfoiconInteractable)EditorGUILayout.ObjectField("Info Icon Prefab", InfoIconPrefab, typeof(InfoiconInteractable), false);
+        placeInfoTagInsideThisParent = (GameObject)EditorGUILayout.ObjectField("Place Info Tag Inside This Parent", placeInfoTagInsideThisParent, typeof(GameObject), true);
 
         GUILayout.Space(10);
 
@@ -30,11 +30,11 @@ public class PlacePrefabOnTopCenter : EditorWindow
 
         GUILayout.Space(10);
 
-        if (GUILayout.Button("Place Prefabs on Lowest Mesh Child"))
+        if (GUILayout.Button("Place Info Icons on Lowest Mesh Child"))
         {
-            if (prefab == null)
+            if (InfoIconPrefab == null)
             {
-                Debug.LogError("Please assign a prefab.");
+                Debug.LogError("Please assign InfoIconPrefab.");
                 return;
             }
 
@@ -51,15 +51,12 @@ public class PlacePrefabOnTopCenter : EditorWindow
 
     private void ProcessLowestMeshChild(GameObject obj)
     {
-        // Find all children recursively that have a Renderer
         Renderer[] renderers = obj.GetComponentsInChildren<Renderer>();
 
         foreach (Renderer r in renderers)
         {
-            // Only consider the Renderer’s root object (lowest child with mesh)
             GameObject meshObj = r.gameObject;
 
-            // Check if it is a “lowest mesh child” (i.e., no child has a Renderer)
             bool hasChildRenderer = false;
             foreach (Transform t in meshObj.transform)
             {
@@ -69,9 +66,8 @@ public class PlacePrefabOnTopCenter : EditorWindow
                     break;
                 }
             }
-            if (hasChildRenderer) continue; // Skip, not the lowest
+            if (hasChildRenderer) continue;
 
-            // Compute bounds
             Renderer[] meshRenderers = meshObj.GetComponentsInChildren<Renderer>();
             Bounds bounds = meshRenderers[0].bounds;
             foreach (Renderer mr in meshRenderers)
@@ -83,18 +79,18 @@ public class PlacePrefabOnTopCenter : EditorWindow
                 bounds.center.z + zOffset
             );
 
-            // Instantiate prefab
-            GameObject instance = (GameObject)PrefabUtility.InstantiatePrefab(prefab);
-            Undo.RegisterCreatedObjectUndo(instance, "Place Prefab");
+            // Instantiate Info Icon Prefab
+            GameObject instance = (GameObject)PrefabUtility.InstantiatePrefab(InfoIconPrefab.gameObject);
+            Undo.RegisterCreatedObjectUndo(instance, "Place Info Icon");
             instance.transform.position = topCenter;
 
-            // Parent prefab under parentRoot if assigned, otherwise under meshObj
-            if (parentRoot != null)
-                instance.transform.SetParent(parentRoot.transform, true);
+            // Set parent
+            if (placeInfoTagInsideThisParent != null)
+                instance.transform.SetParent(placeInfoTagInsideThisParent.transform, true);
             else
                 instance.transform.SetParent(meshObj.transform, true);
 
-            // Assign info_Content
+            // Update info_Content
             InfoiconInteractable info = instance.GetComponent<InfoiconInteractable>();
             if (info != null)
             {
@@ -104,7 +100,7 @@ public class PlacePrefabOnTopCenter : EditorWindow
                 EditorUtility.SetDirty(info);
             }
 
-            Debug.Log("Placed prefab on: " + meshObj.name);
+            Debug.Log("Placed Info Icon on: " + meshObj.name);
         }
     }
 }
