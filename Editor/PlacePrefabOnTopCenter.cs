@@ -7,7 +7,7 @@ public class PlacePrefabOnTopCenter : EditorWindow
     private float xOffset = 0f;
     private float yOffset = 0.1f;
     private float zOffset = 0f;
-    private GameObject placeInfoTagInsideThisParent;
+    private GameObject parentForInfoTag;
 
     [MenuItem("Tools/Place Prefab on Top Center")]
     public static void ShowWindow()
@@ -20,7 +20,7 @@ public class PlacePrefabOnTopCenter : EditorWindow
         GUILayout.Label("Info Icon Placement Tool", EditorStyles.boldLabel);
 
         InfoIconPrefab = (InfoiconInteractable)EditorGUILayout.ObjectField("Info Icon Prefab", InfoIconPrefab, typeof(InfoiconInteractable), false);
-        placeInfoTagInsideThisParent = (GameObject)EditorGUILayout.ObjectField("Place Info Tag Inside This Parent", placeInfoTagInsideThisParent, typeof(GameObject), true);
+        parentForInfoTag = (GameObject)EditorGUILayout.ObjectField("Info Tag Parent", parentForInfoTag, typeof(GameObject), true);
 
         GUILayout.Space(10);
 
@@ -96,8 +96,8 @@ public class PlacePrefabOnTopCenter : EditorWindow
             instance.transform.position = topCenter;
 
             // Set parent
-            if (placeInfoTagInsideThisParent != null)
-                instance.transform.SetParent(placeInfoTagInsideThisParent.transform, true);
+            if (parentForInfoTag != null)
+                instance.transform.SetParent(parentForInfoTag.transform, true);
             else
                 instance.transform.SetParent(meshObj.transform, true);
 
