@@ -8,7 +8,7 @@ using UnityEngine.XR.Interaction.Toolkit;
 
 public class InfoIconManager : MonoBehaviour
 {
-    [SerializeField] InfoiconInteractable[] popupInteractables;
+    [SerializeField]public InfoiconInteractable[] popupInteractables;
 
     public static Action<InfoiconInteractable,bool> OnPopupInteractiveChanged;
 
