@@ -14,18 +14,17 @@ public class PlacePrefabOnTopCenterWithCSV : EditorWindow
 
     private TextAsset csvFile;
 
-    // CSV: Tag in S3D -> Label in VR (unique for placement)
+    // CSV: Tag in S3D -> Label in VR
     private Dictionary<string, string> csvTagMap = new Dictionary<string, string>();
-
-    // CSV duplicate tracking
     private Dictionary<string, int> csvDuplicateCount = new Dictionary<string, int>();
 
     // Scene tracking
     private Dictionary<string, int> sceneMatchCount = new Dictionary<string, int>();
-    private List<string> missingModels = new List<string>();
-
-    // Prevent multiple icons per ModelName
     private HashSet<string> placedModelNames = new HashSet<string>();
+
+    // Missing classification
+    private List<string> meshNotAvailableModels = new List<string>();
+    private List<string> notAvailableInSceneModels = new List<string>();
 
     [MenuItem("Tools/Place Prefab on Top Center (CSV Based)")]
     public static void ShowWindow()
@@ -75,7 +74,7 @@ public class PlacePrefabOnTopCenterWithCSV : EditorWindow
     }
 
     // ---------------------------------------------------------
-    // CSV Loading (with duplicate detection)
+    // CSV Loading
     // ---------------------------------------------------------
     private void LoadCSV()
     {
@@ -103,19 +102,17 @@ public class PlacePrefabOnTopCenterWithCSV : EditorWindow
                 if (columns.Length < 2)
                     continue;
 
-                string modelName = columns[0].Trim();
+                string modelName = "/" + columns[0].Trim();
                 string subTaskHeading = columns[1].Trim();
 
                 if (string.IsNullOrEmpty(modelName))
                     continue;
 
-                // Track CSV duplicates
                 if (!csvDuplicateCount.ContainsKey(modelName))
                     csvDuplicateCount[modelName] = 1;
                 else
                     csvDuplicateCount[modelName]++;
 
-                // Keep only first entry for placement
                 if (!csvTagMap.ContainsKey(modelName))
                     csvTagMap.Add(modelName, subTaskHeading);
             }
@@ -130,13 +127,13 @@ public class PlacePrefabOnTopCenterWithCSV : EditorWindow
     private void ProcessMatchingMeshObjects(GameObject root)
     {
         sceneMatchCount.Clear();
-        missingModels.Clear();
         placedModelNames.Clear();
+        meshNotAvailableModels.Clear();
+        notAvailableInSceneModels.Clear();
 
         foreach (string key in csvTagMap.Keys)
             sceneMatchCount[key] = 0;
 
-        // Track unique logical parents per ModelName
         Dictionary<string, HashSet<Transform>> uniqueParents =
             new Dictionary<string, HashSet<Transform>>();
 
@@ -147,7 +144,6 @@ public class PlacePrefabOnTopCenterWithCSV : EditorWindow
             Transform current = renderer.transform;
             Transform matchedRoot = null;
 
-            // Walk UP to find the OUTERMOST matching parent
             while (current != null)
             {
                 if (csvTagMap.ContainsKey(current.name))
@@ -161,17 +157,14 @@ public class PlacePrefabOnTopCenterWithCSV : EditorWindow
             if (matchedRoot == null)
                 continue;
 
-            // Init set
             if (!uniqueParents.ContainsKey(matchedRoot.name))
                 uniqueParents[matchedRoot.name] = new HashSet<Transform>();
 
-            // Add unique logical object
             if (!uniqueParents[matchedRoot.name].Add(matchedRoot))
-                continue; // already counted
+                continue;
 
             sceneMatchCount[matchedRoot.name]++;
 
-            // Place icon only once per model name
             if (placedModelNames.Contains(matchedRoot.name))
                 continue;
 
@@ -195,6 +188,8 @@ public class PlacePrefabOnTopCenterWithCSV : EditorWindow
                 parentForInfoTag != null ? parentForInfoTag.transform : matchedRoot,
                 true);
 
+            instance.name = csvTagMap[matchedRoot.name];
+
             InfoiconInteractable info = instance.GetComponent<InfoiconInteractable>();
             if (info != null)
             {
@@ -203,70 +198,97 @@ public class PlacePrefabOnTopCenterWithCSV : EditorWindow
             }
         }
 
-        GenerateFinalReport();
-    }
-
-    // ---------------------------------------------------------
-    // Reporting
-    // ---------------------------------------------------------
-    private void GenerateFinalReport()
-    {
-        int availableCount = 0;
-        int missingCount = 0;
-        //int sceneRepeatedTotal = 0;
-        int csvRepeatedTotal = 0;
-
-        Debug.Log("========== CSV vs Scene Report ==========");
+        // FAST existence check
+        HashSet<string> allTransformNames = new HashSet<string>();
+        foreach (Transform t in root.GetComponentsInChildren<Transform>(true))
+            allTransformNames.Add(t.name);
 
         foreach (var kvp in sceneMatchCount)
         {
-            if (kvp.Value > 0)
+            if (kvp.Value == 0)
             {
-                availableCount++;
-
-                int repeated = kvp.Value - 1;
-                if (repeated > 0)
-                {
-                    //sceneRepeatedTotal += repeated;
-                    Debug.Log($"✔ AVAILABLE : {kvp.Key} (Found {kvp.Value}, Scene Repeated {repeated})");
-                }
+                if (allTransformNames.Contains(kvp.Key))
+                    meshNotAvailableModels.Add(kvp.Key);
                 else
-                {
-                    Debug.Log($"✔ AVAILABLE : {kvp.Key} (Found {kvp.Value})");
-                }
-            }
-            else
-            {
-                missingCount++;
-                missingModels.Add(kvp.Key);
+                    notAvailableInSceneModels.Add(kvp.Key);
             }
         }
 
-        // CSV repeated count
+        GenerateFinalReport();
+        GenerateResultCSV();
+    }
+
+    // ---------------------------------------------------------
+    // Final Report
+    // ---------------------------------------------------------
+    private void GenerateFinalReport()
+    {
+        int availableCount = placedModelNames.Count;
+        int meshNotAvailableCount = meshNotAvailableModels.Count;
+        int notAvailableCount = notAvailableInSceneModels.Count;
+
+        int csvRepeatedTotal = 0;
         foreach (var kvp in csvDuplicateCount)
         {
             if (kvp.Value > 1)
                 csvRepeatedTotal += (kvp.Value - 1);
         }
 
+        Debug.Log("========== CSV vs Scene Report ==========");
         Debug.Log("-----------------------------------------");
-        Debug.Log($"Total CSV Tags         : {csvTagMap.Count + csvRepeatedTotal}");
-        Debug.Log($"CSV Unique Entries     : {csvTagMap.Count}");
-        Debug.Log($"Available in Scene     : {availableCount}");
-        Debug.Log($"Not Available in Scene : {missingCount}");
-        Debug.Log($"CSV Repeated Tags      : {csvRepeatedTotal}");
+        Debug.Log($"Total CSV Tags           : {csvTagMap.Count + csvRepeatedTotal}");
+        Debug.Log($"CSV Unique Entries       : {csvTagMap.Count}");
+        Debug.Log($"Available in Scene       : {availableCount}");
+        Debug.Log($"Mesh Not Available       : {meshNotAvailableCount}");
+        Debug.Log($"Not Available in Scene   : {notAvailableCount}");
+        Debug.Log($"CSV Repeated Tags        : {csvRepeatedTotal}");
+        Debug.Log("-----------------------------------------");
 
-        if (missingModels.Count > 0)
+        int validation =
+            availableCount +
+            meshNotAvailableCount +
+            notAvailableCount;
+
+        if (validation != csvTagMap.Count)
+            Debug.LogError("⚠ Count mismatch detected!");
+        else
+            Debug.Log("✅ Counts perfectly matched.");
+    }
+
+    // ---------------------------------------------------------
+    // Result CSV
+    // ---------------------------------------------------------
+    private void GenerateResultCSV()
+    {
+        if (csvFile == null)
+            return;
+
+        string originalPath = AssetDatabase.GetAssetPath(csvFile);
+        string directory = Path.GetDirectoryName(originalPath);
+        string newFilePath = Path.Combine(directory, "CSV_Result_Report.csv");
+
+        using (StreamWriter writer = new StreamWriter(newFilePath))
         {
-            Debug.LogWarning("Missing ModelNames:");
-            foreach (string name in missingModels)
-                Debug.LogWarning($"{name}");
+            writer.WriteLine("Tag in E3D,Label in VR,Status");
+
+            foreach (var kvp in csvTagMap)
+            {
+                string modelName = kvp.Key;
+                string label = kvp.Value;
+                string status;
+
+                if (placedModelNames.Contains(modelName))
+                    status = "Available";
+                else if (meshNotAvailableModels.Contains(modelName))
+                    status = "Mesh Not Available";
+                else
+                    status = "Not Available in Scene";
+
+                writer.WriteLine($"{modelName},{label},{status}");
+            }
         }
 
-        foreach (var kvp in csvDuplicateCount)
-        {
-            if (kvp.Value > 1)
-                Debug.LogWarning($"CSV DUPLICATE : {kvp.Key} appears {kvp.Value} times");
-        }
+        AssetDatabase.Refresh();
+        Debug.Log($"✅ Result CSV Generated at: {newFilePath}");
     }
 }
