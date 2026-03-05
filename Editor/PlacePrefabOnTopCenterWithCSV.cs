@@ -14,6 +14,11 @@ public class PlacePrefabOnTopCenterWithCSV : EditorWindow
 
     private TextAsset csvFile;
 
+    // Overlap control
+    private List<Vector3> placedPositions = new List<Vector3>();
+    private float overlapCheckRadius = 0.25f;
+    private float verticalShift = 0.08f;
+
     // CSV: Tag in S3D -> Label in VR
     private Dictionary<string, string> csvTagMap = new Dictionary<string, string>();
     private Dictionary<string, int> csvDuplicateCount = new Dictionary<string, int>();
@@ -128,6 +133,8 @@ public class PlacePrefabOnTopCenterWithCSV : EditorWindow
     {
         sceneMatchCount.Clear();
         placedModelNames.Clear();
+        placedPositions.Clear();
+
         meshNotAvailableModels.Clear();
         notAvailableInSceneModels.Clear();
 
@@ -178,10 +185,42 @@ public class PlacePrefabOnTopCenterWithCSV : EditorWindow
                 bounds.center.z + zOffset
             );
 
+            // -------------------------------------------------
+            // Overlap prevention (vertical stacking)
+            // -------------------------------------------------
+
+            bool overlapFound = true;
+            int safety = 0;
+
+            while (overlapFound && safety < 10)
+            {
+                overlapFound = false;
+
+                foreach (Vector3 pos in placedPositions)
+                {
+                    if (Vector3.Distance(topCenter, pos) < overlapCheckRadius)
+                    {
+                        overlapFound = true;
+
+                        // Move upward
+                        topCenter += Vector3.up * verticalShift;
+
+                        break;
+                    }
+                }
+
+                safety++;
+            }
+
+            placedPositions.Add(topCenter);
+
+            // -------------------------------------------------
+
             GameObject instance =
                 (GameObject)PrefabUtility.InstantiatePrefab(infoIconPrefab.gameObject);
 
             Undo.RegisterCreatedObjectUndo(instance, "Place Info Icon");
+
             instance.transform.position = topCenter;
 
             instance.transform.SetParent(
@@ -191,6 +230,7 @@ public class PlacePrefabOnTopCenterWithCSV : EditorWindow
             instance.name = csvTagMap[matchedRoot.name];
 
             InfoiconInteractable info = instance.GetComponent<InfoiconInteractable>();
+
             if (info != null)
             {
                 Undo.RecordObject(info, "Assign Sub-Task Heading");
@@ -200,6 +240,7 @@ public class PlacePrefabOnTopCenterWithCSV : EditorWindow
 
         // FAST existence check
         HashSet<string> allTransformNames = new HashSet<string>();
+
         foreach (Transform t in root.GetComponentsInChildren<Transform>(true))
             allTransformNames.Add(t.name);
 
@@ -228,6 +269,7 @@ public class PlacePrefabOnTopCenterWithCSV : EditorWindow
         int notAvailableCount = notAvailableInSceneModels.Count;
 
         int csvRepeatedTotal = 0;
+
         foreach (var kvp in csvDuplicateCount)
         {
             if (kvp.Value > 1)
