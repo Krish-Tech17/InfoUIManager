@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -45,13 +45,15 @@ public class InfoiconInteractable : UnityEngine.XR.Interaction.Toolkit.Interacta
          //  detailsUI = GetComponentInChildren<Canvas>(true).gameObject;
         }
         OnHoverLazer(false);
-        if (detailsUI!=null)
+        // 👉 Default state change
+        if (detailsUI != null)
         {
-            detailsUI.SetActive(false);
+            detailsUI.SetActive(true);   // ENABLE details UI
         }
-        if (infoIcon!=null)
+
+        if (infoIcon != null)
         {
-            infoIcon.SetActive(true);
+            infoIcon.SetActive(false);  // DISABLE info icon
         }
         if (fillerImage==null)
         {
